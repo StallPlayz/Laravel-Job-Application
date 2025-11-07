@@ -42,6 +42,11 @@ const router = createRouter({
       component: EditApplication,
       meta: { requiresAuth: true },
     },
+    {
+      path: '/test-axios',
+      name: 'TestAxios',
+      component: () => import('../views/TestAxios.vue'),
+    },
   ],
 })
 

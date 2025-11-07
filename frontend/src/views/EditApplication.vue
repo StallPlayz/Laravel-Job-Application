@@ -1,46 +1,44 @@
 <template>
-  <div class="min-h-screen bg-gray-100">
+  <div class="edit-page">
     <Header />
 
-    <div class="container mx-auto px-4 py-8">
-      <div class="max-w-2xl mx-auto">
-        <div class="bg-white rounded-lg shadow-md p-8">
-          <h2 class="text-3xl font-bold text-gray-800 mb-6">Edit Application</h2>
+    <div class="edit-container">
+      <div class="edit-card">
+        <h2 class="page-title">Edit Application</h2>
 
-          <div v-if="loading" class="text-center py-4">
-            <p class="text-gray-600">Loading application...</p>
+        <div v-if="loading" class="loading-state">
+          <p>Loading application...</p>
+        </div>
+
+        <div v-else-if="application" class="content">
+          <div class="job-info">
+            <h3 class="job-title">{{ application.job.title }}</h3>
+            <p class="job-description">{{ application.job.description }}</p>
           </div>
 
-          <div v-else-if="application">
-            <div class="mb-6 p-4 bg-gray-50 rounded">
-              <h3 class="text-xl font-semibold text-gray-800 mb-2">{{ application.job.title }}</h3>
-              <p class="text-gray-600">{{ application.job.description }}</p>
+          <form @submit.prevent="handleSubmit" class="application-form">
+            <div class="form-group">
+              <label for="reason">Why do you want to apply for this position? *</label>
+              <textarea
+                v-model="formData.reason"
+                id="reason"
+                rows="8"
+                required
+                placeholder="Tell us why you're the perfect fit for this role..."
+              ></textarea>
             </div>
 
-            <form @submit.prevent="handleSubmit">
-              <div class="mb-6">
-                <label for="reason">Alasan Melamar *</label>
-                <textarea
-                  v-model="formData.reason"
-                  id="reason"
-                  rows="6"
-                  required
-                  placeholder="Jelaskan alasan Anda melamar pekerjaan ini..."
-                ></textarea>
-              </div>
+            <div class="form-actions">
+              <button type="submit" :disabled="submitting" class="submit-btn">
+                {{ submitting ? 'Updating...' : 'Update Application' }}
+              </button>
+              <button type="button" @click="goBack" class="cancel-btn">Cancel</button>
+            </div>
+          </form>
+        </div>
 
-              <div class="flex gap-4">
-                <button type="submit" :disabled="submitting" class="flex-1 btn-primary">
-                  {{ submitting ? 'Updating...' : 'Update Application' }}
-                </button>
-                <button type="button" @click="goBack" class="flex-1 btn-gray">Cancel</button>
-              </div>
-            </form>
-          </div>
-
-          <div v-else class="text-center py-4">
-            <p class="text-red-600">Application not found</p>
-          </div>
+        <div v-else class="error-state">
+          <p>Application not found</p>
         </div>
       </div>
     </div>
@@ -48,191 +46,150 @@
 </template>
 
 <style scoped>
-.min-h-screen {
+.edit-page {
   min-height: 100vh;
+  background: #f7fafc;
 }
 
-.bg-gray-100 {
-  background-color: #f3f4f6;
+.edit-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 20px;
 }
 
-.container {
-  width: 100%;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 1rem;
-  padding-right: 1rem;
+.edit-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  padding: 40px;
 }
 
-@media (min-width: 1024px) {
-  .container {
-    max-width: 1024px;
-  }
-}
-
-.px-4 {
-  padding-left: 1rem;
-  padding-right: 1rem;
-}
-
-.py-8 {
-  padding-top: 2rem;
-  padding-bottom: 2rem;
-}
-
-.py-4 {
-  padding-top: 1rem;
-  padding-bottom: 1rem;
-}
-
-.max-w-2xl {
-  max-width: 42rem;
-}
-
-.mx-auto {
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.bg-white {
-  background-color: #ffffff;
-}
-
-.rounded-lg {
-  border-radius: 0.5rem;
-}
-
-.shadow-md {
-  box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
-
-.p-8 {
-  padding: 2rem;
-}
-
-.p-4 {
-  padding: 1rem;
-}
-
-.text-3xl {
-  font-size: 1.875rem;
-  line-height: 2.25rem;
-}
-
-.text-xl {
-  font-size: 1.25rem;
-  line-height: 1.75rem;
-}
-
-.font-bold {
+.page-title {
+  font-size: 32px;
   font-weight: 700;
-}
-
-.font-semibold {
-  font-weight: 600;
-}
-
-.text-gray-800 {
-  color: #1f2937;
-}
-
-.text-gray-600 {
-  color: #4b5563;
-}
-
-.text-red-600 {
-  color: #dc2626;
-}
-
-.mb-6 {
-  margin-bottom: 1.5rem;
-}
-
-.mb-2 {
-  margin-bottom: 0.5rem;
-}
-
-.text-center {
+  color: #1a202c;
+  margin-bottom: 32px;
   text-align: center;
 }
 
-.bg-gray-50 {
-  background-color: #f9fafb;
+.loading-state,
+.error-state {
+  text-align: center;
+  padding: 40px;
 }
 
-.rounded {
-  border-radius: 0.25rem;
+.loading-state p {
+  color: #718096;
+  font-size: 16px;
 }
 
-label {
-  display: block;
-  color: #374151;
-  font-size: 0.875rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
+.error-state p {
+  color: #e53e3e;
+  font-size: 16px;
 }
 
-textarea {
-  width: 100%;
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
-  font-size: 1rem;
-  line-height: 1.5;
-  font-family: inherit;
-}
-
-textarea:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
-}
-
-.flex {
+.content {
   display: flex;
+  flex-direction: column;
+  gap: 32px;
 }
 
-.gap-4 {
-  gap: 1rem;
+.job-info {
+  background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+  padding: 24px;
+  border-radius: 12px;
+  border-left: 4px solid #667eea;
 }
 
-.flex-1 {
-  flex: 1 1 0%;
+.job-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 12px;
 }
 
-button {
-  padding: 0.5rem 1rem;
-  font-weight: 700;
-  border-radius: 0.375rem;
+.job-description {
+  color: #4a5568;
+  line-height: 1.7;
+}
+
+.application-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-size: 15px;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 10px;
+}
+
+.form-group textarea {
+  padding: 14px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 15px;
+  font-family: inherit;
+  line-height: 1.6;
+  transition: all 0.3s ease;
+  outline: none;
+  resize: vertical;
+}
+
+.form-group textarea:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.submit-btn,
+.cancel-btn {
+  padding: 14px 24px;
   border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.2s;
+  transition: all 0.3s ease;
 }
 
-.btn-primary {
-  background-color: #2563eb;
-  color: #ffffff;
+.submit-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
 }
 
-.btn-primary:hover:not(:disabled) {
-  background-color: #1d4ed8;
+.submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
 }
 
-.btn-primary:disabled {
-  background-color: #9ca3af;
+.submit-btn:disabled {
+  background: #cbd5e0;
   cursor: not-allowed;
+  transform: none;
 }
 
-.btn-gray {
-  background-color: #6b7280;
-  color: #ffffff;
+.cancel-btn {
+  background: #edf2f7;
+  color: #4a5568;
 }
 
-.btn-gray:hover {
-  background-color: #4b5563;
+.cancel-btn:hover {
+  background: #e2e8f0;
+  transform: translateY(-2px);
 }
 </style>
 

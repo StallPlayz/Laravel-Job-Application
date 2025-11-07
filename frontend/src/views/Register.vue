@@ -1,20 +1,26 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-100 py-12 px-4">
-    <div class="max-w-md w-full bg-white rounded-lg shadow-md p-8">
-      <h2 class="text-3xl font-bold text-center text-gray-800 mb-6">Register</h2>
+  <div class="auth-container">
+    <div class="auth-card">
+      <h2 class="auth-title">Create Account</h2>
 
-      <div v-if="errorMessage" class="alert-error">
+      <div v-if="errorMessage" class="error-alert">
         {{ errorMessage }}
       </div>
 
-      <form @submit.prevent="handleRegister">
-        <div class="mb-4">
-          <label for="name">Name</label>
-          <input v-model="formData.name" type="text" id="name" required placeholder="Your name" />
+      <form @submit.prevent="handleRegister" class="auth-form">
+        <div class="form-group">
+          <label for="name">Full Name</label>
+          <input
+            v-model="formData.name"
+            type="text"
+            id="name"
+            required
+            placeholder="Enter your full name"
+          />
         </div>
 
-        <div class="mb-4">
-          <label for="email">Email</label>
+        <div class="form-group">
+          <label for="email">Email Address</label>
           <input
             v-model="formData.email"
             type="email"
@@ -24,7 +30,7 @@
           />
         </div>
 
-        <div class="mb-6">
+        <div class="form-group">
           <label for="password">Password</label>
           <input
             v-model="formData.password"
@@ -32,182 +38,133 @@
             id="password"
             required
             minlength="6"
-            placeholder="Minimum 6 characters"
+            placeholder="At least 6 characters"
           />
         </div>
 
-        <button type="submit" :disabled="loading" class="w-full btn-primary">
-          {{ loading ? 'Registering...' : 'Register' }}
+        <button type="submit" :disabled="loading" class="submit-btn">
+          {{ loading ? 'Creating Account...' : 'Register' }}
         </button>
       </form>
 
-      <p class="text-center text-gray-600 text-sm mt-4">
+      <p class="auth-footer">
         Already have an account?
-        <router-link to="/login" class="link"> Login here </router-link>
+        <router-link to="/login" class="auth-link">Sign in here</router-link>
       </p>
     </div>
   </div>
 </template>
 
 <style scoped>
-.min-h-screen {
+.auth-container {
   min-height: 100vh;
-}
-
-.flex {
   display: flex;
-}
-
-.items-center {
   align-items: center;
-}
-
-.justify-center {
   justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
 }
 
-.bg-gray-100 {
-  background-color: #f3f4f6;
-}
-
-.py-12 {
-  padding-top: 3rem;
-  padding-bottom: 3rem;
-}
-
-.px-4 {
-  padding-left: 1rem;
-  padding-right: 1rem;
-}
-
-.max-w-md {
-  max-width: 28rem;
-}
-
-.w-full {
+.auth-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  padding: 48px 40px;
   width: 100%;
+  max-width: 440px;
 }
 
-.bg-white {
-  background-color: #ffffff;
-}
-
-.rounded-lg {
-  border-radius: 0.5rem;
-}
-
-.shadow-md {
-  box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
-
-.p-8 {
-  padding: 2rem;
-}
-
-.text-3xl {
-  font-size: 1.875rem;
-  line-height: 2.25rem;
-}
-
-.font-bold {
+.auth-title {
+  font-size: 32px;
   font-weight: 700;
-}
-
-.text-center {
+  color: #1a202c;
   text-align: center;
+  margin-bottom: 32px;
 }
 
-.text-gray-800 {
-  color: #1f2937;
+.error-alert {
+  background: #fee;
+  border-left: 4px solid #ef4444;
+  color: #991b1b;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  font-size: 14px;
 }
 
-.text-gray-600 {
-  color: #4b5563;
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-.text-sm {
-  font-size: 0.875rem;
-  line-height: 1.25rem;
+.form-group {
+  display: flex;
+  flex-direction: column;
 }
 
-.mb-6 {
-  margin-bottom: 1.5rem;
-}
-
-.mb-4 {
-  margin-bottom: 1rem;
-}
-
-.mt-4 {
-  margin-top: 1rem;
-}
-
-.alert-error {
-  background-color: #fee2e2;
-  border: 1px solid #f87171;
-  color: #b91c1c;
-  padding: 0.75rem 1rem;
-  border-radius: 0.25rem;
-  margin-bottom: 1rem;
-}
-
-label {
-  display: block;
+.form-group label {
+  font-size: 14px;
+  font-weight: 600;
   color: #374151;
-  font-size: 0.875rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
+  margin-bottom: 8px;
 }
 
-input {
-  width: 100%;
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
-  font-size: 1rem;
-  line-height: 1.5;
-}
-
-input:focus {
+.form-group input {
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 15px;
+  transition: all 0.3s ease;
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }
 
-button {
-  padding: 0.5rem 1rem;
-  font-weight: 700;
-  border-radius: 0.375rem;
+.form-group input:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.submit-btn {
+  margin-top: 8px;
+  padding: 14px 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
   border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.2s;
+  transition: all 0.3s ease;
 }
 
-.btn-primary {
-  background-color: #2563eb;
-  color: #ffffff;
+.submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
 }
 
-.btn-primary:hover:not(:disabled) {
-  background-color: #1d4ed8;
-}
-
-.btn-primary:disabled {
-  background-color: #9ca3af;
+.submit-btn:disabled {
+  background: #9ca3af;
   cursor: not-allowed;
+  transform: none;
 }
 
-.link {
-  color: #2563eb;
+.auth-footer {
+  text-align: center;
+  margin-top: 24px;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.auth-link {
+  color: #667eea;
   text-decoration: none;
   font-weight: 600;
+  transition: color 0.2s;
 }
 
-.link:hover {
-  color: #1d4ed8;
+.auth-link:hover {
+  color: #764ba2;
+  text-decoration: underline;
 }
 </style>
 

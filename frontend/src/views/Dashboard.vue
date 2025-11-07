@@ -1,30 +1,29 @@
 <template>
-  <div class="min-h-screen bg-gray-100">
+  <div class="dashboard">
     <Header />
 
-    <div class="container mx-auto px-4 py-8">
-      <div class="grid md-grid-cols-2 gap-8">
-        <!-- Job Listings -->
-        <div>
-          <h2 class="text-2xl font-bold text-gray-800 mb-4">Available Jobs</h2>
+    <div class="dashboard-container">
+      <div class="dashboard-grid">
+        <!-- Available Jobs Section -->
+        <div class="section">
+          <h2 class="section-title">Available Jobs</h2>
 
-          <div v-if="loadingJobs" class="text-center py-4">
-            <p class="text-gray-600">Loading jobs...</p>
+          <div v-if="loadingJobs" class="loading-state">
+            <p>Loading jobs...</p>
           </div>
 
-          <div v-else-if="jobs.length === 0" class="bg-white rounded-lg shadow p-6">
-            <p class="text-gray-600">No jobs available at the moment.</p>
+          <div v-else-if="jobs.length === 0" class="empty-state">
+            <p>No jobs available at the moment.</p>
           </div>
 
-          <div v-else class="space-y-4">
-            <div v-for="job in jobs" :key="job.id" class="bg-white rounded-lg shadow p-6">
-              <h3 class="text-xl font-semibold text-gray-800 mb-2">{{ job.title }}</h3>
-              <p class="text-gray-600 mb-4">{{ job.description }}</p>
+          <div v-else class="jobs-list">
+            <div v-for="job in jobs" :key="job.id" class="job-card">
+              <h3 class="job-title">{{ job.title }}</h3>
+              <p class="job-description">{{ job.description }}</p>
               <button
                 @click="goToApply(job.id)"
                 :disabled="hasApplied(job.id)"
-                class="btn-primary"
-                :class="{ 'btn-disabled': hasApplied(job.id) }"
+                :class="['apply-btn', { disabled: hasApplied(job.id) }]"
               >
                 {{ hasApplied(job.id) ? 'Already Applied' : 'Apply Now' }}
               </button>
@@ -32,31 +31,29 @@
           </div>
         </div>
 
-        <!-- My Applications -->
-        <div>
-          <h2 class="text-2xl font-bold text-gray-800 mb-4">My Applications</h2>
+        <!-- My Applications Section -->
+        <div class="section">
+          <h2 class="section-title">My Applications</h2>
 
-          <div v-if="loadingApplications" class="text-center py-4">
-            <p class="text-gray-600">Loading applications...</p>
+          <div v-if="loadingApplications" class="loading-state">
+            <p>Loading applications...</p>
           </div>
 
-          <div v-else-if="applications.length === 0" class="bg-white rounded-lg shadow p-6">
-            <p class="text-gray-600">Anda belum melamar</p>
+          <div v-else-if="applications.length === 0" class="empty-state">
+            <p>You haven't applied to any jobs yet.</p>
           </div>
 
-          <div v-else class="space-y-4">
-            <div
-              v-for="application in applications"
-              :key="application.id"
-              class="bg-white rounded-lg shadow p-6"
-            >
-              <h3 class="text-xl font-semibold text-gray-800 mb-2">
-                {{ application.job.title }}
-              </h3>
-              <p class="text-gray-600 mb-4"><strong>Alasan:</strong> {{ application.reason }}</p>
-              <div class="flex gap-2">
-                <button @click="editApplication(application.id)" class="btn-yellow">Edit</button>
-                <button @click="deleteApplication(application.id)" class="btn-red">Delete</button>
+          <div v-else class="applications-list">
+            <div v-for="application in applications" :key="application.id" class="application-card">
+              <h3 class="application-title">{{ application.job.title }}</h3>
+              <div class="application-reason">
+                <strong>Reason:</strong> {{ application.reason }}
+              </div>
+              <div class="application-actions">
+                <button @click="editApplication(application.id)" class="edit-btn">Edit</button>
+                <button @click="deleteApplication(application.id)" class="delete-btn">
+                  Delete
+                </button>
               </div>
             </div>
           </div>
@@ -67,170 +64,163 @@
 </template>
 
 <style scoped>
-.min-h-screen {
+.dashboard {
   min-height: 100vh;
+  background: #f7fafc;
 }
 
-.bg-gray-100 {
-  background-color: #f3f4f6;
+.dashboard-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
 }
 
-.container {
-  width: 100%;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 1rem;
-  padding-right: 1rem;
-}
-
-@media (min-width: 1024px) {
-  .container {
-    max-width: 1024px;
-  }
-}
-
-.px-4 {
-  padding-left: 1rem;
-  padding-right: 1rem;
-}
-
-.py-8 {
-  padding-top: 2rem;
-  padding-bottom: 2rem;
-}
-
-.py-4 {
-  padding-top: 1rem;
-  padding-bottom: 1rem;
-}
-
-.mx-auto {
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.grid {
+.dashboard-grid {
   display: grid;
-  gap: 2rem;
+  grid-template-columns: 1fr;
+  gap: 32px;
 }
 
 @media (min-width: 768px) {
-  .md-grid-cols-2 {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
-.gap-8 {
-  gap: 2rem;
-}
-
-.gap-2 {
-  gap: 0.5rem;
-}
-
-.text-2xl {
-  font-size: 1.5rem;
-  line-height: 2rem;
-}
-
-.text-xl {
-  font-size: 1.25rem;
-  line-height: 1.75rem;
-}
-
-.font-bold {
-  font-weight: 700;
-}
-
-.font-semibold {
-  font-weight: 600;
-}
-
-.text-gray-800 {
-  color: #1f2937;
-}
-
-.text-gray-600 {
-  color: #4b5563;
-}
-
-.mb-4 {
-  margin-bottom: 1rem;
-}
-
-.mb-2 {
-  margin-bottom: 0.5rem;
-}
-
-.text-center {
-  text-align: center;
-}
-
-.bg-white {
-  background-color: #ffffff;
-}
-
-.rounded-lg {
-  border-radius: 0.5rem;
-}
-
-.shadow {
-  box-shadow:
-    0 1px 3px 0 rgba(0, 0, 0, 0.1),
-    0 1px 2px 0 rgba(0, 0, 0, 0.06);
-}
-
-.p-6 {
-  padding: 1.5rem;
-}
-
-.space-y-4 > * + * {
-  margin-top: 1rem;
-}
-
-.flex {
+.section {
   display: flex;
+  flex-direction: column;
 }
 
-button {
-  padding: 0.5rem 1rem;
+.section-title {
+  font-size: 28px;
   font-weight: 700;
-  border-radius: 0.375rem;
+  color: #1a202c;
+  margin-bottom: 24px;
+}
+
+.loading-state,
+.empty-state {
+  background: white;
+  border-radius: 12px;
+  padding: 40px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.loading-state p,
+.empty-state p {
+  color: #718096;
+  font-size: 16px;
+}
+
+.jobs-list,
+.applications-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.job-card,
+.application-card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.job-card:hover,
+.application-card:hover {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.job-title,
+.application-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 12px;
+}
+
+.job-description {
+  color: #4a5568;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.application-reason {
+  background: #f7fafc;
+  padding: 12px;
+  border-radius: 8px;
+  color: #4a5568;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.application-reason strong {
+  color: #2d3748;
+}
+
+.apply-btn {
+  padding: 10px 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
   border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.2s;
-  color: #ffffff;
+  transition: all 0.3s ease;
 }
 
-.btn-primary {
-  background-color: #2563eb;
+.apply-btn:hover:not(.disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(102, 126, 234, 0.3);
 }
 
-.btn-primary:hover:not(:disabled) {
-  background-color: #1d4ed8;
-}
-
-.btn-primary:disabled,
-.btn-disabled {
-  background-color: #9ca3af;
+.apply-btn.disabled {
+  background: #cbd5e0;
   cursor: not-allowed;
+  transform: none;
 }
 
-.btn-yellow {
-  background-color: #eab308;
+.application-actions {
+  display: flex;
+  gap: 12px;
 }
 
-.btn-yellow:hover {
-  background-color: #ca8a04;
+.edit-btn,
+.delete-btn {
+  flex: 1;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.btn-red {
-  background-color: #ef4444;
+.edit-btn {
+  background: #ecc94b;
+  color: white;
 }
 
-.btn-red:hover {
-  background-color: #dc2626;
+.edit-btn:hover {
+  background: #d69e2e;
+  transform: translateY(-2px);
+}
+
+.delete-btn {
+  background: #f56565;
+  color: white;
+}
+
+.delete-btn:hover {
+  background: #e53e3e;
+  transform: translateY(-2px);
 }
 </style>
 
